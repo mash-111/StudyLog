@@ -62,7 +62,8 @@ class StudyStore: ObservableObject {
             }
             if studied {
                 streak += 1
-                date = calendar.date(byAdding: .day, value: -1, to: date)!
+                guard let newDate = calendar.date(byAdding: .day, value: -1, to: date) else { break }
+                date = newDate
             } else {
                 break
             }

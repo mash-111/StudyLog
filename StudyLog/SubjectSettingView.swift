@@ -10,17 +10,13 @@ import SwiftUI
 struct SubjectSettingsView: View {
     @ObservedObject var subjectStore: SubjectStore
     @State private var newSubject = ""
-    @Environment(\.editMode) private var editMode
-
-    var isEditing: Bool {
-        editMode?.wrappedValue.isEditing ?? false
-    }
+    @State private var editMode: EditMode = .inactive
 
     var body: some View {
         NavigationStack {
             List {
                 ForEach(subjectStore.subjects) { subject in
-                    if isEditing {
+                    if editMode.isEditing {
                         TextField("項目名", text: Binding(
                             get: { subject.name },
                             set: { subjectStore.update(id: subject.id, to: $0) }
@@ -36,7 +32,7 @@ struct SubjectSettingsView: View {
                     subjectStore.move(from: source, to: destination)
                 }
 
-                if isEditing {
+                if editMode.isEditing {
                     HStack {
                         TextField("新しい項目を追加", text: $newSubject)
                         Button(action: addSubject) {
@@ -47,6 +43,7 @@ struct SubjectSettingsView: View {
                     }
                 }
             }
+            .environment(\.editMode, $editMode)
             .navigationTitle("カテゴリー設定")
             .toolbar {
                 EditButton()

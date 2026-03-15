@@ -19,6 +19,7 @@ struct ContentView: View {
     @State private var showHistory = false
 
 
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab = 0
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -81,6 +82,13 @@ struct ContentView: View {
                         subject = subjectStore.subjects.first?.name ?? ""
                     }
                 }
+                .onChange(of: showSubjectSettings) { _, isShowing in
+                    if !isShowing {
+                        if !subjectStore.subjects.map(\.name).contains(subject) {
+                            subject = subjectStore.subjects.first?.name ?? ""
+                        }
+                    }
+                }
             }
             .tabItem {
                 Label("タイマー", systemImage: "timer")
@@ -98,6 +106,19 @@ struct ContentView: View {
                 Label("カレンダー", systemImage: "calendar")
             }
             .tag(1)
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background && isStudying {
+                timer?.invalidate()
+                timer = nil
+                if let start = startDate {
+                    let duration = Date().timeIntervalSince(start)
+                    store.add(duration: duration, subject: subject)
+                }
+                startDate = nil
+                elapsedSeconds = 0
+                isStudying = false
+            }
         }
     }
 

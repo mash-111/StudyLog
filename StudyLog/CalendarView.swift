@@ -114,19 +114,18 @@ struct CalendarView: View {
                                 Text(timeString(Int(record.duration)))
                                     .font(.system(.body, design: .monospaced))
                                     .foregroundColor(.blue)
+                                Button(role: .destructive) {
+                                    store.delete(byId: record.id)
+                                } label: {
+                                    Image(systemName: "trash")
+                                        .font(.caption)
+                                }
                             }
                             .padding(.horizontal)
                             .padding(.vertical, 10)
                             .background(Color(.systemGray6))
                             .cornerRadius(10)
                             .padding(.horizontal)
-                            .swipeActions {
-                                Button(role: .destructive) {
-                                    store.delete(byId: record.id)
-                                } label: {
-                                    Label("削除", systemImage: "trash")
-                                }
-                            }
                         }
                     }
                 }

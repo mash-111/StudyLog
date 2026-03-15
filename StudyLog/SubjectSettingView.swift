@@ -47,10 +47,7 @@ struct SubjectSettingsView: View {
             }
             .onChange(of: focusedID) { _, newValue in
                 if let oldID = editingID, oldID != newValue {
-                    let trimmed = editingText.trimmingCharacters(in: .whitespaces)
-                    if !trimmed.isEmpty {
-                        subjectStore.update(id: oldID, to: trimmed)
-                    }
+                    saveEdit(id: oldID)
                 }
                 if let newValue,
                    let subject = subjectStore.subjects.first(where: { $0.id == newValue }) {
@@ -66,6 +63,11 @@ struct SubjectSettingsView: View {
                     focusedID = nil
                 }
             }
+            .onDisappear {
+                if let id = editingID {
+                    saveEdit(id: id)
+                }
+            }
             .navigationTitle("カテゴリー設定")
             .toolbar {
                 EditButton()
@@ -74,11 +76,16 @@ struct SubjectSettingsView: View {
         .environment(\.editMode, $editMode)
     }
 
-    func commitEdit(id: UUID) {
+    private func saveEdit(id: UUID) {
         let trimmed = editingText.trimmingCharacters(in: .whitespaces)
-        if !trimmed.isEmpty {
-            subjectStore.update(id: id, to: trimmed)
-        }
+        guard !trimmed.isEmpty else { return }
+        let isDuplicate = subjectStore.subjects.contains { $0.id != id && $0.name == trimmed }
+        guard !isDuplicate else { return }
+        subjectStore.update(id: id, to: trimmed)
+    }
+
+    func commitEdit(id: UUID) {
+        saveEdit(id: id)
         editingID = nil
         editingText = ""
         focusedID = nil
@@ -87,6 +94,8 @@ struct SubjectSettingsView: View {
     func addSubject() {
         let trimmed = newSubject.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
+        let isDuplicate = subjectStore.subjects.contains { $0.name == trimmed }
+        guard !isDuplicate else { return }
         subjectStore.add(trimmed)
         newSubject = ""
     }

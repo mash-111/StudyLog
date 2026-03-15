@@ -13,6 +13,7 @@ struct SubjectSettingsView: View {
     @State private var editMode: EditMode = .inactive
     @State private var editingID: UUID? = nil
     @State private var editingText = ""
+    @FocusState private var focusedID: UUID?
 
     var body: some View {
         NavigationStack {
@@ -20,6 +21,7 @@ struct SubjectSettingsView: View {
                 ForEach(subjectStore.subjects) { subject in
                     if editingID == subject.id {
                         TextField("項目名", text: $editingText)
+                            .focused($focusedID, equals: subject.id)
                             .onSubmit { commitEdit(id: subject.id) }
                     } else {
                         Text(subject.name)
@@ -31,12 +33,16 @@ struct SubjectSettingsView: View {
                                 }
                                 editingID = subject.id
                                 editingText = subject.name
+                                focusedID = subject.id
                             }
                     }
                 }
                 .onDelete { offsets in
                     subjectStore.delete(at: offsets)
                 }
+                .onMove(perform: editMode.isEditing ? { source, destination in
+                    subjectStore.move(from: source, to: destination)
+                } : nil)
 
                 if !editMode.isEditing {
                     HStack {
@@ -69,6 +75,7 @@ struct SubjectSettingsView: View {
         }
         editingID = nil
         editingText = ""
+        focusedID = nil
     }
 
     func addSubject() {

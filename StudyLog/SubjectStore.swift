@@ -40,6 +40,11 @@ class SubjectStore: ObservableObject {
         save()
     }
 
+    func move(from source: IndexSet, to destination: Int) {
+        subjects.move(fromOffsets: source, toOffset: destination)
+        save()
+    }
+
     func update(id: UUID, to name: String) {
         if let index = subjects.firstIndex(where: { $0.id == id }) {
             subjects[index].name = name

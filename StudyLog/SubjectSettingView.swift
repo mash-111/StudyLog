@@ -43,12 +43,12 @@ struct SubjectSettingsView: View {
                     }
                 }
             }
-            .environment(\.editMode, $editMode)
             .navigationTitle("カテゴリー設定")
             .toolbar {
                 EditButton()
             }
         }
+        .environment(\.editMode, $editMode)
     }
 
     func addSubject() {

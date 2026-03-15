@@ -19,23 +19,13 @@ struct SubjectSettingsView: View {
         NavigationStack {
             List {
                 ForEach(subjectStore.subjects) { subject in
-                    if editingID == subject.id {
-                        TextField("項目名", text: $editingText)
-                            .focused($focusedID, equals: subject.id)
-                            .onSubmit { commitEdit(id: subject.id) }
-                    } else {
-                        Text(subject.name)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                guard !editMode.isEditing else { return }
-                                if let currentID = editingID {
-                                    commitEdit(id: currentID)
-                                }
-                                editingID = subject.id
-                                editingText = subject.name
-                                focusedID = subject.id
-                            }
-                    }
+                    TextField("項目名", text: Binding(
+                        get: { editingID == subject.id ? editingText : subject.name },
+                        set: { editingText = $0 }
+                    ))
+                    .focused($focusedID, equals: subject.id)
+                    .disabled(editMode.isEditing)
+                    .onSubmit { commitEdit(id: subject.id) }
                 }
                 .onDelete { offsets in
                     subjectStore.delete(at: offsets)
@@ -55,9 +45,25 @@ struct SubjectSettingsView: View {
                     }
                 }
             }
+            .onChange(of: focusedID) { _, newValue in
+                if let oldID = editingID, oldID != newValue {
+                    let trimmed = editingText.trimmingCharacters(in: .whitespaces)
+                    if !trimmed.isEmpty {
+                        subjectStore.update(id: oldID, to: trimmed)
+                    }
+                }
+                if let newValue,
+                   let subject = subjectStore.subjects.first(where: { $0.id == newValue }) {
+                    editingID = newValue
+                    editingText = subject.name
+                } else {
+                    editingID = nil
+                    editingText = ""
+                }
+            }
             .onChange(of: editMode) { _, newMode in
-                if newMode.isEditing, let id = editingID {
-                    commitEdit(id: id)
+                if newMode.isEditing {
+                    focusedID = nil
                 }
             }
             .navigationTitle("カテゴリー設定")

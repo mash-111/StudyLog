@@ -44,7 +44,7 @@ struct ContentView: View {
 
                     if !isStudying {
                         Picker("科目", selection: $subject) {
-                            ForEach(subjectStore.subjects, id: \.self) { Text($0) }
+                            ForEach(subjectStore.subjects) { s in Text(s.name).tag(s.name) }
                         }
                         .pickerStyle(.segmented)
                         .padding(.horizontal)
@@ -77,8 +77,8 @@ struct ContentView: View {
                     SubjectSettingsView(subjectStore: subjectStore)
                 }
                 .onAppear {
-                    if subject.isEmpty || !subjectStore.subjects.contains(subject) {
-                        subject = subjectStore.subjects.first ?? ""
+                    if subject.isEmpty || !subjectStore.subjects.map(\.name).contains(subject) {
+                        subject = subjectStore.subjects.first?.name ?? ""
                     }
                 }
             }

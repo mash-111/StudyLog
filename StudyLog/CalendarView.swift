@@ -164,18 +164,23 @@ struct CalendarView: View {
         var current = monthInterval.start
         while current < monthInterval.end {
             result.append(current)
-            current = calendar.date(byAdding: .day, value: 1, to: current)!
+            guard let next = calendar.date(byAdding: .day, value: 1, to: current) else { break }
+            current = next
         }
         return result
     }
 
     func prevMonth() {
-        displayedMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth)!
+        if let newMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) {
+            displayedMonth = newMonth
+        }
         selectedDate = nil
     }
 
     func nextMonth() {
-        displayedMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth)!
+        if let newMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) {
+            displayedMonth = newMonth
+        }
         selectedDate = nil
     }
 

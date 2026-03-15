@@ -9,19 +9,29 @@ import Foundation
 import Combine
 import SwiftUI
 
+struct Subject: Identifiable, Codable {
+    let id: UUID
+    var name: String
+
+    init(name: String) {
+        self.id = UUID()
+        self.name = name
+    }
+}
+
 class SubjectStore: ObservableObject {
-    @Published var subjects: [String] = []
+    @Published var subjects: [Subject] = []
 
     init() {
         load()
         if subjects.isEmpty {
-            subjects = ["項目1", "項目2", "項目3"]
+            subjects = ["項目1", "項目2", "項目3"].map { Subject(name: $0) }
             save()
         }
     }
 
-    func add(_ subject: String) {
-        subjects.append(subject)
+    func add(_ name: String) {
+        subjects.append(Subject(name: name))
         save()
     }
 
@@ -35,16 +45,32 @@ class SubjectStore: ObservableObject {
         save()
     }
 
-    func update(at index: Int, to name: String) {
-        subjects[index] = name
-        save()
+    func update(id: UUID, to name: String) {
+        if let index = subjects.firstIndex(where: { $0.id == id }) {
+            subjects[index].name = name
+            save()
+        }
     }
 
     private func save() {
-        UserDefaults.standard.set(subjects, forKey: "studySubjects")
+        if let data = try? JSONEncoder().encode(subjects) {
+            UserDefaults.standard.set(data, forKey: "studySubjects")
+        }
     }
 
     private func load() {
-        subjects = UserDefaults.standard.stringArray(forKey: "studySubjects") ?? []
+        // 新フォーマット（UUID付き）を試みる
+        if let data = UserDefaults.standard.data(forKey: "studySubjects"),
+           let saved = try? JSONDecoder().decode([Subject].self, from: data) {
+            subjects = saved
+            return
+        }
+        // 旧フォーマット（文字列配列）からマイグレーション
+        if let oldSubjects = UserDefaults.standard.stringArray(forKey: "studySubjects") {
+            subjects = oldSubjects.map { Subject(name: $0) }
+            save()
+            return
+        }
+        subjects = []
     }
 }

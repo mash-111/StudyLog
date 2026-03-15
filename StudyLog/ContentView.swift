@@ -15,7 +15,7 @@ struct ContentView: View {
     @State private var startDate: Date? = nil
     @State private var elapsedSeconds = 0
     @State private var timer: Timer? = nil
-    @State private var subject = "一般"
+    @State private var subject = ""
     @State private var showHistory = false
 
 
@@ -75,6 +75,11 @@ struct ContentView: View {
                 }
                 .sheet(isPresented: $showSubjectSettings) {
                     SubjectSettingsView(subjectStore: subjectStore)
+                }
+                .onAppear {
+                    if subject.isEmpty || !subjectStore.subjects.contains(subject) {
+                        subject = subjectStore.subjects.first ?? ""
+                    }
                 }
             }
             .tabItem {

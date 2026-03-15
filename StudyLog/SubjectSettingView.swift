@@ -26,6 +26,9 @@ struct SubjectSettingsView: View {
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 guard !editMode.isEditing else { return }
+                                if let currentID = editingID {
+                                    commitEdit(id: currentID)
+                                }
                                 editingID = subject.id
                                 editingText = subject.name
                             }

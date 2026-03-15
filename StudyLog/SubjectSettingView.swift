@@ -19,14 +19,14 @@ struct SubjectSettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(Array(subjectStore.subjects.enumerated()), id: \.offset) { index, subject in
+                ForEach(subjectStore.subjects) { subject in
                     if isEditing {
                         TextField("項目名", text: Binding(
-                            get: { subjectStore.subjects[index] },
-                            set: { subjectStore.update(at: index, to: $0) }
+                            get: { subject.name },
+                            set: { subjectStore.update(id: subject.id, to: $0) }
                         ))
                     } else {
-                        Text(subject)
+                        Text(subject.name)
                     }
                 }
                 .onDelete { offsets in

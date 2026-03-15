@@ -24,7 +24,7 @@ struct SubjectSettingsView: View {
                         set: { editingText = $0 }
                     ))
                     .focused($focusedID, equals: subject.id)
-                    .disabled(editMode.isEditing)
+                    .disabled(!editMode.isEditing)
                     .onSubmit { commitEdit(id: subject.id) }
                 }
                 .onDelete { offsets in
@@ -59,7 +59,7 @@ struct SubjectSettingsView: View {
                 }
             }
             .onChange(of: editMode) { _, newMode in
-                if newMode.isEditing {
+                if !newMode.isEditing {
                     focusedID = nil
                 }
             }

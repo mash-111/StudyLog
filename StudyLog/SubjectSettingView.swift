@@ -10,7 +10,7 @@ import SwiftUI
 struct SubjectSettingsView: View {
     @ObservedObject var subjectStore: SubjectStore
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.editMode) private var editMode
+    @State private var editMode: EditMode = .inactive
 
     @State private var newSubjectName = ""
     @State private var showEditAlert = false
@@ -20,7 +20,7 @@ struct SubjectSettingsView: View {
     @State private var duplicateMessage = ""
 
     private var isEditing: Bool {
-        editMode?.wrappedValue.isEditing == true
+        editMode.isEditing
     }
 
     var body: some View {
@@ -62,6 +62,7 @@ struct SubjectSettingsView: View {
                     }
                 }
             }
+            .environment(\.editMode, $editMode)
             .navigationTitle("カテゴリー設定")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

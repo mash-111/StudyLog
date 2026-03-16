@@ -73,7 +73,11 @@ struct SubjectSettingsView: View {
                     }
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    EditButton()
+                    Button(isEditing ? "完了" : "編集") {
+                        withAnimation {
+                            editMode = isEditing ? .inactive : .active
+                        }
+                    }
                 }
             }
             .alert("カテゴリー名を編集", isPresented: $showEditAlert) {

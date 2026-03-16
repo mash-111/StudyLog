@@ -199,9 +199,6 @@ struct HistoryView: View {
                 }
             }
             .navigationTitle("勉強履歴")
-            .toolbar {
-                EditButton()
-            }
         }
     }
 

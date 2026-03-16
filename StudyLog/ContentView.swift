@@ -195,6 +195,7 @@ struct StatCard: View {
 
 struct HistoryView: View {
     @ObservedObject var store: StudyStore
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
@@ -219,6 +220,15 @@ struct HistoryView: View {
                 }
             }
             .navigationTitle("勉強履歴")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+            }
         }
     }
 

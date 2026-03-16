@@ -30,9 +30,9 @@ struct SubjectSettingsView: View {
                 .onDelete { offsets in
                     subjectStore.delete(at: offsets)
                 }
-                .onMove(perform: editMode.isEditing ? { source, destination in
+                .onMove { source, destination in
                     subjectStore.move(from: source, to: destination)
-                } : nil)
+                }
 
                 if !editMode.isEditing {
                     HStack {

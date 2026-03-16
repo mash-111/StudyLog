@@ -107,6 +107,21 @@ struct ContentView: View {
             }
             .tag(1)
         }
+        .gesture(
+            DragGesture(minimumDistance: 50, coordinateSpace: .global)
+                .onEnded { value in
+                    let horizontal = value.translation.width
+                    let vertical = value.translation.height
+                    guard abs(horizontal) > abs(vertical) else { return }
+                    withAnimation {
+                        if horizontal < 0 && selectedTab < 1 {
+                            selectedTab += 1
+                        } else if horizontal > 0 && selectedTab > 0 {
+                            selectedTab -= 1
+                        }
+                    }
+                }
+        )
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .background && isStudying {
                 timer?.invalidate()

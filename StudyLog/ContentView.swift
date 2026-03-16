@@ -43,7 +43,12 @@ struct ContentView: View {
                     Text(timeString(elapsedSeconds))
                         .font(.system(size: 64, weight: .thin, design: .monospaced))
 
-                    if !isStudying {
+                    if isStudying {
+                        Text(subject)
+                            .font(.title3)
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                    } else {
                         Picker("科目", selection: $subject) {
                             ForEach(subjectStore.subjects) { s in Text(s.name).tag(s.name) }
                         }
